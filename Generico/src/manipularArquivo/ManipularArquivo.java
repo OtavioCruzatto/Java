@@ -82,7 +82,7 @@ public class ManipularArquivo {
 	 *
 	 * @author Otavio Cruzatto
 	 */
-	public boolean apagarConteudoDoArquivo() {
+	public boolean apagarTodoConteudoDoArquivo() {
 
 		try {
 			this.setEscritorDeArquivo(new FileWriter(this.getEnderecoDoArquivo()));
@@ -98,6 +98,31 @@ public class ManipularArquivo {
 
 		return this.lerTodoArquivo().isEmpty();
 	}
+	
+	public boolean apagarConteudoDaLinha(int linhaASerApagada) {
+		
+		String linhaASerExcluida = this.lerConteudoDaLinha(linhaASerApagada);
+		String conteudoCompletoDoArquivo = this.lerTodoArquivo();
+		String novoConteudo = conteudoCompletoDoArquivo.replace(linhaASerExcluida, "");
+
+		try {
+			this.setEscritorDeArquivo(new FileWriter(this.getEnderecoDoArquivo()));
+			this.setBufferDoEscritorDeArquivo(new BufferedWriter(this.getEscritorDeArquivo()));
+			this.getBufferDoEscritorDeArquivo().write("");
+			this.getBufferDoEscritorDeArquivo().close();
+			this.getEscritorDeArquivo().close();
+			this.setQuantidadeDeLinhasNoArquivo();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		boolean alteracaoDosDados = this.escreverNoArquivo(novoConteudo);
+
+		return alteracaoDosDados;
+	}
+	
+	
 
 	/**
 	 * Método que lê todo o conteúdo do arquivo do objeto instanciado.
