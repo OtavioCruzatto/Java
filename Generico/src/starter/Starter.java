@@ -9,7 +9,7 @@ public class Starter {
 
 		ManipularArquivo arquivo_1 = new ManipularArquivo(endereco_1);
 		
-		System.out.println(arquivo_1.lerConteudoEntreAsPosicoes(5, 9));
+		arquivo_1.apagarConteudoDaLinha(5);
 
 	}
 
