@@ -18,8 +18,7 @@ public class ManipularArquivo {
 	private boolean arquivoCriado = false;
 	private boolean arquivoDeletado = false;
 	private int quantidadeDeLinhasNoArquivo = 0;
-
-
+	
 	/**
 	 * Construtor da classe ManipularArquivo.
 	 * <br/><br/>
@@ -28,7 +27,7 @@ public class ManipularArquivo {
 	 * endereco recebido e testa se o arquivo existe.
 	 *
 	 * @param enderecoDoArquivo
-	 * <br/>Recebe como parâmetro uma String com o endereço do local em que o arquivo que será manipulado está.
+	 * <br/>Recebe como parâmetro uma String com o endereço do local em que o arquivo que será manipulado está ou será criado.
 	 *
 	 * @author Otavio Cruzatto
 	 */
@@ -75,9 +74,9 @@ public class ManipularArquivo {
 
 		return escritaRealizada;
 	}
-	
+
 	/**
-	 * Método que substitui o conteúdo da linha passada como parâmetro, pela String passada como parâmetro 
+	 * Método que substitui o conteúdo da linha passada como parâmetro, pela String passada como parâmetro
 	 * no arquivo do objeto instanciado, se a linha existir.
 	 * @return
 	 * Retorna true se o conteúdo da linha do arquivo foi substituido, caso contrário retorna false.
