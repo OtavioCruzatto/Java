@@ -8,8 +8,8 @@ public class Starter {
 		String endereco_1 = "C:\\Users\\otavio\\Desktop\\ArquivoTeste.txt";
 
 		ManipularArquivo arquivo_1 = new ManipularArquivo(endereco_1);
-		
-		arquivo_1.apagarConteudoDaLinha(5);
+
+		arquivo_1.substituirConteudoDaLinha(7, "KKKKKKKKKKKKK");
 
 	}
 
