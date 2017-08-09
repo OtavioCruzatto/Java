@@ -44,6 +44,7 @@ public class ManipularArquivo {
 
 	/**
 	 * Método que escreve a string recebida como parâmetro, no arquivo do objeto instanciado.
+	 * <br/>Obs: Se o arquivo já conter informações, a string recebida é escrita no final do arquivo.
 	 * @param informacaoParaSerEscrita
 	 * @return
 	 * Retorna true se a escrita foi realizada, caso contrário retorna false.
@@ -74,6 +75,30 @@ public class ManipularArquivo {
 
 		return escritaRealizada;
 	}
+	
+	/**
+	 * Método que substitui o conteúdo da linha passada como parâmetro, pela String passada como parâmetro 
+	 * no arquivo do objeto instanciado, se a linha existir.
+	 * @return
+	 * Retorna true se o conteúdo da linha do arquivo foi substituido, caso contrário retorna false.
+	 *
+	 * @author Otavio Cruzatto
+	 */
+	public boolean substituirConteudoDaLinha(int linhaASerSubstituida, String informacaoParaSerEscrita) {
+
+		boolean substituicaoDoConteudoRealizada = false;
+
+		if(this.getQuantidadeDeLinhasNoArquivo() >= linhaASerSubstituida) {
+			String linhaASerExcluida = this.lerConteudoDaLinha(linhaASerSubstituida);
+			String conteudoCompletoDoArquivo = this.lerTodoArquivo();
+			String novoConteudo = conteudoCompletoDoArquivo.replace(linhaASerExcluida, informacaoParaSerEscrita);
+
+			this.apagarTodoConteudoDoArquivo();
+			substituicaoDoConteudoRealizada = this.escreverNoArquivo(novoConteudo);
+		}
+
+		return substituicaoDoConteudoRealizada;
+	}
 
 	/**
 	 * Método que apaga o conteúdo do arquivo do objeto instanciado.
@@ -98,31 +123,29 @@ public class ManipularArquivo {
 
 		return this.lerTodoArquivo().isEmpty();
 	}
-	
-	public boolean apagarConteudoDaLinha(int linhaASerApagada) {
-		
-		String linhaASerExcluida = this.lerConteudoDaLinha(linhaASerApagada);
-		String conteudoCompletoDoArquivo = this.lerTodoArquivo();
-		String novoConteudo = conteudoCompletoDoArquivo.replace(linhaASerExcluida, "");
 
-		try {
-			this.setEscritorDeArquivo(new FileWriter(this.getEnderecoDoArquivo()));
-			this.setBufferDoEscritorDeArquivo(new BufferedWriter(this.getEscritorDeArquivo()));
-			this.getBufferDoEscritorDeArquivo().write("");
-			this.getBufferDoEscritorDeArquivo().close();
-			this.getEscritorDeArquivo().close();
-			this.setQuantidadeDeLinhasNoArquivo();
+	/**
+	 * Método que apaga o conteúdo da linha passada como parâmetro do arquivo do objeto instanciado, se a linha existir.
+	 * @return
+	 * Retorna true se o conteúdo da linha do arquivo foi apagado, caso contrário retorna false.
+	 *
+	 * @author Otavio Cruzatto
+	 */
+	public boolean apagarConteudoDaLinha(int linhaASerApagada) {
+
+		boolean alteracaoDosDados = false;
+
+		if(this.getQuantidadeDeLinhasNoArquivo() >= linhaASerApagada) {
+			String linhaASerExcluida = this.lerConteudoDaLinha(linhaASerApagada);
+			String conteudoCompletoDoArquivo = this.lerTodoArquivo();
+			String novoConteudo = conteudoCompletoDoArquivo.substring(0, conteudoCompletoDoArquivo.indexOf(linhaASerExcluida)) + conteudoCompletoDoArquivo.substring(conteudoCompletoDoArquivo.indexOf(linhaASerExcluida) + linhaASerExcluida.length() + 1);
+
+			this.apagarTodoConteudoDoArquivo();
+			alteracaoDosDados = this.escreverNoArquivo(novoConteudo);
 		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		boolean alteracaoDosDados = this.escreverNoArquivo(novoConteudo);
 
 		return alteracaoDosDados;
 	}
-	
-	
 
 	/**
 	 * Método que lê todo o conteúdo do arquivo do objeto instanciado.
