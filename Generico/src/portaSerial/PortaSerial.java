@@ -1,5 +1,8 @@
 package portaSerial;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 import com.fazecast.jSerialComm.SerialPort;
 
 public class PortaSerial {
@@ -33,7 +36,15 @@ public class PortaSerial {
 	}
 
 	public void enviarDados(String dadosParaSeremEnviados) {
-
+		try {
+			OutputStream saidaDeDados = portaSerial.getOutputStream();
+			saidaDeDados.write(dadosParaSeremEnviados.getBytes());
+			saidaDeDados.close();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 	public PortaSerial() {
