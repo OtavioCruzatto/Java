@@ -1,9 +1,11 @@
 package portaSerial;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
-
 import com.fazecast.jSerialComm.SerialPort;
+import com.fazecast.jSerialComm.SerialPortDataListener;
+import com.fazecast.jSerialComm.SerialPortEvent;
 
 public class PortaSerial {
 	private SerialPort portaSerial;
@@ -14,6 +16,7 @@ public class PortaSerial {
 	private int paridade;
 	private Baud baudrate;
 	private DataBits dataBits;
+	private String dadosRecebidos = "";
 
 	public boolean conectarNaPorta() {
 		boolean portaComConectada = false;
@@ -23,6 +26,36 @@ public class PortaSerial {
 		if(this.portaSerial.isOpen()) {
 			portaComConectada = true;
 		}
+
+		this.portaSerial.addDataListener(new SerialPortDataListener() {
+
+			@Override
+			public int getListeningEvents() {
+				return SerialPort.LISTENING_EVENT_DATA_AVAILABLE;
+			}
+
+			@Override
+			public void serialEvent(SerialPortEvent event) {
+				if (event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE) {
+					return;
+				}
+				else {
+
+					try {
+						InputStream entradaDeDados = portaSerial.getInputStream();
+						while(portaSerial.bytesAvailable() != 0) {
+							char dadoRecebido = (char) entradaDeDados.read();
+							setDadosRecebidos(getDadosRecebidos() + dadoRecebido);
+						}
+						entradaDeDados.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+
+				}
+			}
+
+		});
 
 		return portaComConectada;
 	}
@@ -37,14 +70,17 @@ public class PortaSerial {
 
 	public void enviarDados(String dadosParaSeremEnviados) {
 		try {
-			OutputStream saidaDeDados = portaSerial.getOutputStream();
+			OutputStream saidaDeDados = this.portaSerial.getOutputStream();
 			saidaDeDados.write(dadosParaSeremEnviados.getBytes());
 			saidaDeDados.close();
 		}
 		catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+	}
+
+	public void fecharPortaCom() {
+		this.portaSerial.closePort();
 	}
 
 	public PortaSerial() {
@@ -136,6 +172,14 @@ public class PortaSerial {
 
 	public void setParidade(int paridade) {
 		this.paridade = paridade;
+	}
+
+	public String getDadosRecebidos() {
+		return dadosRecebidos;
+	}
+
+	public void setDadosRecebidos(String dadosRecebidos) {
+		this.dadosRecebidos = dadosRecebidos;
 	}
 
 
