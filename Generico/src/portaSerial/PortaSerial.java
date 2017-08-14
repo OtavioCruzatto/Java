@@ -41,11 +41,29 @@ public class PortaSerial {
 				}
 				else {
 
+					/*
+					 * Uma forma de receber os dados:
+					 */
+//					try {
+//						InputStream entradaDeDados = portaSerial.getInputStream();
+//						while(portaSerial.bytesAvailable() != 0) {
+//							char dadoRecebido = (char) entradaDeDados.read();
+//							setDadosRecebidos(getDadosRecebidos() + dadoRecebido);
+//						}
+//						entradaDeDados.close();
+//					} catch (IOException e) {
+//						e.printStackTrace();
+//					}
+					
+					/*
+					 * Outra forma de receber os dados:
+					 */
 					try {
 						InputStream entradaDeDados = portaSerial.getInputStream();
-						while(portaSerial.bytesAvailable() != 0) {
-							char dadoRecebido = (char) entradaDeDados.read();
-							setDadosRecebidos(getDadosRecebidos() + dadoRecebido);
+						byte[] novosBytes = new byte[portaSerial.bytesAvailable()];
+						entradaDeDados.read(novosBytes);
+						for(int i = 0; i < novosBytes.length; i++) {
+							setDadosRecebidos(getDadosRecebidos() + (char) novosBytes[i]);
 						}
 						entradaDeDados.close();
 					} catch (IOException e) {
