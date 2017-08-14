@@ -17,11 +17,16 @@ public class PortaSerial {
 	private Baud baudrate;
 	private DataBits dataBits;
 	private String dadosRecebidos = "";
+	private String stringDeFinalDeLinha = "";
+	private CaracterDeFinalDeLinha finalDeLinha;
+	private StatusDaRecepcao statusDaRecepcao = StatusDaRecepcao.NaoFinalizada;
+	private Echo echo = Echo.Desabilitar;
 
 	public boolean conectarNaPorta() {
 		boolean portaComConectada = false;
 
 		this.portaSerial = SerialPort.getCommPort(this.getPortaComSelecionada());
+		this.configurarPorta();
 		this.portaSerial.openPort();
 		if(this.portaSerial.isOpen()) {
 			portaComConectada = true;
@@ -49,11 +54,28 @@ public class PortaSerial {
 //						while(portaSerial.bytesAvailable() != 0) {
 //							char dadoRecebido = (char) entradaDeDados.read();
 //							setDadosRecebidos(getDadosRecebidos() + dadoRecebido);
+//							
+//							if(echo == Echo.Habilitar) {
+//								enviarDados(String.valueOf(dadoRecebido));
+//							}
+//							
 //						}
+//						
+//						if(finalDeLinha == CaracterDeFinalDeLinha.Habilitar) {
+//							if(getDadosRecebidos().endsWith(stringDeFinalDeLinha)) {
+//								setDadosRecebidos(getDadosRecebidos().substring(0, getDadosRecebidos().lastIndexOf(stringDeFinalDeLinha)));
+//								statusDaRecepcao = StatusDaRecepcao.Finalizada;
+//							}
+//							else {
+//							statusDaRecepcao = StatusDaRecepcao.NaoFinalizada;
+//							}
+//						}
+//					
 //						entradaDeDados.close();
 //					} catch (IOException e) {
 //						e.printStackTrace();
 //					}
+
 					
 					/*
 					 * Outra forma de receber os dados:
@@ -64,7 +86,23 @@ public class PortaSerial {
 						entradaDeDados.read(novosBytes);
 						for(int i = 0; i < novosBytes.length; i++) {
 							setDadosRecebidos(getDadosRecebidos() + (char) novosBytes[i]);
+							
+							if(echo == Echo.Habilitar) {
+								enviarDados(String.valueOf((char) novosBytes[i]));
+							}
+							
 						}
+						
+						if(finalDeLinha == CaracterDeFinalDeLinha.Habilitar) {
+							if(getDadosRecebidos().endsWith(String.valueOf(stringDeFinalDeLinha))) {
+								setDadosRecebidos(getDadosRecebidos().substring(0, getDadosRecebidos().lastIndexOf(stringDeFinalDeLinha)));
+								statusDaRecepcao = StatusDaRecepcao.Finalizada;
+							}
+							else {
+								statusDaRecepcao = StatusDaRecepcao.NaoFinalizada;
+							}
+						}
+						
 						entradaDeDados.close();
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -198,6 +236,38 @@ public class PortaSerial {
 
 	public void setDadosRecebidos(String dadosRecebidos) {
 		this.dadosRecebidos = dadosRecebidos;
+	}
+
+	public CaracterDeFinalDeLinha getFinalDeLinha() {
+		return finalDeLinha;
+	}
+
+	public void setFinalDeLinha(CaracterDeFinalDeLinha finalDeLinha) {
+		this.finalDeLinha = finalDeLinha;
+	}
+
+	public StatusDaRecepcao getStatusDaRecepcao() {
+		return statusDaRecepcao;
+	}
+
+	public void setStatusDaRecepcao(StatusDaRecepcao statusDaRecepcao) {
+		this.statusDaRecepcao = statusDaRecepcao;
+	}
+
+	public Echo getEcho() {
+		return echo;
+	}
+
+	public void setEcho(Echo echo) {
+		this.echo = echo;
+	}
+
+	public String getStringDeFinalDeLinha() {
+		return stringDeFinalDeLinha;
+	}
+
+	public void setStringDeFinalDeLinha(String stringDeFinalDeLinha) {
+		this.stringDeFinalDeLinha = stringDeFinalDeLinha;
 	}
 
 
