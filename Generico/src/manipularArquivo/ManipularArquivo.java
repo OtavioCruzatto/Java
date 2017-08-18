@@ -18,7 +18,7 @@ public class ManipularArquivo {
 	private boolean arquivoCriado = false;
 	private boolean arquivoDeletado = false;
 	private int quantidadeDeLinhasNoArquivo = 0;
-	
+
 	/**
 	 * Construtor da classe ManipularArquivo.
 	 * <br/><br/>
@@ -32,12 +32,34 @@ public class ManipularArquivo {
 	 * @author Otavio Cruzatto
 	 */
 	public ManipularArquivo(String enderecoDoArquivo) {
-		this.setEnderecoDoArquivo(enderecoDoArquivo);
-		this.setArquivo(new File(getEnderecoDoArquivo()));
-		this.setArquivoExiste(this.arquivoExiste());
+		this.enderecoDoArquivo = enderecoDoArquivo;
+		this.arquivo = new File(enderecoDoArquivo);
+		this.arquivoExiste = this.arquivoExiste();
 
-		if(isArquivoExiste()) {
-			setQuantidadeDeLinhasNoArquivo();
+		if(this.arquivoExiste) {
+			this.quantidadeDeLinhasNoArquivo = this.quantidadeDeLinhasNoArquivo();
+		}
+	}
+
+	/**
+	 * Construtor da classe ManipularArquivo.
+	 * <br/><br/>
+	 *
+	 * Seta o File recebido como o arquivo do objeto, instancia um objeto do tipo File com o
+	 * arquivo recebido e testa se o arquivo existe.
+	 *
+	 * @param arquivo
+	 * <br/>Recebe como parâmetro um File em que o arquivo que será manipulado está ou será criado.
+	 *
+	 * @author Otavio Cruzatto
+	 */
+	public ManipularArquivo(File arquivo) {
+		this.arquivo = arquivo;
+		this.enderecoDoArquivo = this.arquivo.getAbsolutePath();
+		this.arquivoExiste = this.arquivoExiste();
+
+		if(this.arquivoExiste) {
+			this.quantidadeDeLinhasNoArquivo = this.quantidadeDeLinhasNoArquivo();
 		}
 	}
 
@@ -54,12 +76,12 @@ public class ManipularArquivo {
 		boolean escritaRealizada = false;
 
 		try {
-			this.setEscritorDeArquivo(new FileWriter(this.getEnderecoDoArquivo(), true));
-			this.setBufferDoEscritorDeArquivo(new BufferedWriter(this.getEscritorDeArquivo()));
-			this.getBufferDoEscritorDeArquivo().write(informacaoParaSerEscrita);
-			this.getBufferDoEscritorDeArquivo().close();
-			this.getEscritorDeArquivo().close();
-			this.setQuantidadeDeLinhasNoArquivo();
+			this.escritorDeArquivo = new FileWriter(this.arquivo, true);
+			this.bufferDoEscritorDeArquivo = new BufferedWriter(this.escritorDeArquivo);
+			this.bufferDoEscritorDeArquivo.write(informacaoParaSerEscrita);
+			this.bufferDoEscritorDeArquivo.close();
+			this.escritorDeArquivo.close();
+			this.quantidadeDeLinhasNoArquivo = this.quantidadeDeLinhasNoArquivo();
 
 			if(this.lerTodoArquivo().endsWith(informacaoParaSerEscrita)) {
 				escritaRealizada = true;
@@ -67,6 +89,7 @@ public class ManipularArquivo {
 			else {
 				escritaRealizada = false;
 			}
+
 		}
 		catch (IOException e) {
 			e.printStackTrace();
@@ -87,7 +110,7 @@ public class ManipularArquivo {
 
 		boolean substituicaoDoConteudoRealizada = false;
 
-		if(this.getQuantidadeDeLinhasNoArquivo() >= linhaASerSubstituida) {
+		if(this.quantidadeDeLinhasNoArquivo >= linhaASerSubstituida) {
 			String linhaASerExcluida = this.lerConteudoDaLinha(linhaASerSubstituida);
 			String conteudoCompletoDoArquivo = this.lerTodoArquivo();
 			String novoConteudo = conteudoCompletoDoArquivo.replace(linhaASerExcluida, informacaoParaSerEscrita);
@@ -109,12 +132,12 @@ public class ManipularArquivo {
 	public boolean apagarTodoConteudoDoArquivo() {
 
 		try {
-			this.setEscritorDeArquivo(new FileWriter(this.getEnderecoDoArquivo()));
-			this.setBufferDoEscritorDeArquivo(new BufferedWriter(this.getEscritorDeArquivo()));
-			this.getBufferDoEscritorDeArquivo().write("");
-			this.getBufferDoEscritorDeArquivo().close();
-			this.getEscritorDeArquivo().close();
-			this.setQuantidadeDeLinhasNoArquivo();
+			this.escritorDeArquivo = new FileWriter(this.arquivo);
+			this.bufferDoEscritorDeArquivo = new BufferedWriter(this.escritorDeArquivo);
+			this.escritorDeArquivo.write("");
+			this.bufferDoEscritorDeArquivo.close();
+			this.escritorDeArquivo.close();
+			this.quantidadeDeLinhasNoArquivo = this.quantidadeDeLinhasNoArquivo();
 		}
 		catch (IOException e) {
 			e.printStackTrace();
@@ -134,7 +157,7 @@ public class ManipularArquivo {
 
 		boolean alteracaoDosDados = false;
 
-		if(this.getQuantidadeDeLinhasNoArquivo() >= linhaASerApagada) {
+		if(this.quantidadeDeLinhasNoArquivo >= linhaASerApagada) {
 			String linhaASerExcluida = this.lerConteudoDaLinha(linhaASerApagada);
 			String conteudoCompletoDoArquivo = this.lerTodoArquivo();
 			String novoConteudo = conteudoCompletoDoArquivo.substring(0, conteudoCompletoDoArquivo.indexOf(linhaASerExcluida)) + conteudoCompletoDoArquivo.substring(conteudoCompletoDoArquivo.indexOf(linhaASerExcluida) + linhaASerExcluida.length() + 1);
@@ -156,13 +179,13 @@ public class ManipularArquivo {
 		String conteudoLidoDoArquivo = "";
 
 		try {
-			this.setLeitorDeArquivo(new FileReader(this.getEnderecoDoArquivo()));
-			this.setBufferDoLeitorDeArquivo(new BufferedReader(getLeitorDeArquivo()));
-			while(this.getBufferDoLeitorDeArquivo().ready()) {
-				conteudoLidoDoArquivo = conteudoLidoDoArquivo + this.getBufferDoLeitorDeArquivo().readLine() + "\n";
+			this.leitorDeArquivo = new FileReader(this.arquivo);
+			this.bufferDoLeitorDeArquivo = new BufferedReader(this.leitorDeArquivo);
+			while(this.bufferDoLeitorDeArquivo.ready()) {
+				conteudoLidoDoArquivo = conteudoLidoDoArquivo + this.bufferDoLeitorDeArquivo.readLine() + "\n";
 			}
-			this.getLeitorDeArquivo().close();
-			this.getBufferDoLeitorDeArquivo().close();
+			this.leitorDeArquivo.close();
+			this.bufferDoLeitorDeArquivo.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -188,18 +211,19 @@ public class ManipularArquivo {
 		String conteudoFiltradoDoArquivo = "";
 
 		try {
-			this.setLeitorDeArquivo(new FileReader(this.getEnderecoDoArquivo()));
-			this.setBufferDoLeitorDeArquivo(new BufferedReader(getLeitorDeArquivo()));
-			while(this.getBufferDoLeitorDeArquivo().ready()) {
-				conteudoLidoDoArquivo = conteudoLidoDoArquivo + this.getBufferDoLeitorDeArquivo().readLine() + "\n";
+			this.leitorDeArquivo = new FileReader(this.arquivo);
+			this.bufferDoLeitorDeArquivo = new BufferedReader(this.leitorDeArquivo);
+
+			while(this.bufferDoLeitorDeArquivo.ready()) {
+				conteudoLidoDoArquivo = conteudoLidoDoArquivo + this.bufferDoLeitorDeArquivo.readLine() + "\n";
 			}
 
 			if(conteudoLidoDoArquivo.contains(primeiraString) && conteudoLidoDoArquivo.contains(segundaString)) {
 				conteudoFiltradoDoArquivo = conteudoLidoDoArquivo.substring(conteudoLidoDoArquivo.indexOf(primeiraString), conteudoLidoDoArquivo.indexOf(segundaString));
 			}
 
-			this.getLeitorDeArquivo().close();
-			this.getBufferDoLeitorDeArquivo().close();
+			this.leitorDeArquivo.close();
+			this.bufferDoLeitorDeArquivo.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -224,18 +248,19 @@ public class ManipularArquivo {
 		String conteudoFiltradoDoArquivo = "";
 
 		try {
-			this.setLeitorDeArquivo(new FileReader(this.getEnderecoDoArquivo()));
-			this.setBufferDoLeitorDeArquivo(new BufferedReader(getLeitorDeArquivo()));
-			while(this.getBufferDoLeitorDeArquivo().ready()) {
-				conteudoLidoDoArquivo = conteudoLidoDoArquivo + this.getBufferDoLeitorDeArquivo().readLine() + "\n";
+			this.leitorDeArquivo = new FileReader(this.arquivo);
+			this.bufferDoLeitorDeArquivo = new BufferedReader(this.leitorDeArquivo);
+
+			while(this.bufferDoLeitorDeArquivo.ready()) {
+				conteudoLidoDoArquivo = conteudoLidoDoArquivo + this.bufferDoLeitorDeArquivo.readLine() + "\n";
 			}
 
 			if((conteudoLidoDoArquivo.length() - 1) >= segundaPosicao) {
 				conteudoFiltradoDoArquivo = conteudoLidoDoArquivo.substring(primeiraPosicao, segundaPosicao);
 			}
 
-			this.getLeitorDeArquivo().close();
-			this.getBufferDoLeitorDeArquivo().close();
+			this.leitorDeArquivo.close();
+			this.bufferDoLeitorDeArquivo.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -254,24 +279,25 @@ public class ManipularArquivo {
 		String conteudoLidoDoArquivo = "";
 		int contador = 0;
 
-		if(linhaAserLida <= getQuantidadeDeLinhasNoArquivo()) {
+		if(linhaAserLida <= this.quantidadeDeLinhasNoArquivo) {
 			try {
-				this.setLeitorDeArquivo(new FileReader(this.getEnderecoDoArquivo()));
-				this.setBufferDoLeitorDeArquivo(new BufferedReader(getLeitorDeArquivo()));
-				while(this.getBufferDoLeitorDeArquivo().ready()) {
+				this.leitorDeArquivo = new FileReader(this.arquivo);
+				this.bufferDoLeitorDeArquivo = new BufferedReader(this.leitorDeArquivo);
+
+				while(this.bufferDoLeitorDeArquivo.ready()) {
 					contador++;
-					conteudoLidoDoArquivo = this.getBufferDoLeitorDeArquivo().readLine();
+					conteudoLidoDoArquivo = this.bufferDoLeitorDeArquivo.readLine();
 					if(contador == linhaAserLida) {
 						conteudoDaLinhaDesejada = conteudoLidoDoArquivo;
 					}
 				}
-				this.getLeitorDeArquivo().close();
-				this.getBufferDoLeitorDeArquivo().close();
+
+				this.leitorDeArquivo.close();
+				this.bufferDoLeitorDeArquivo.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-
 
 		return conteudoDaLinhaDesejada;
 	}
@@ -288,17 +314,19 @@ public class ManipularArquivo {
 		int contador = 0;
 
 		try {
-			this.setLeitorDeArquivo(new FileReader(this.getEnderecoDoArquivo()));
-			this.setBufferDoLeitorDeArquivo(new BufferedReader(getLeitorDeArquivo()));
-			while(this.getBufferDoLeitorDeArquivo().ready()) {
+			this.leitorDeArquivo = new FileReader(this.arquivo);
+			this.bufferDoLeitorDeArquivo = new BufferedReader(this.leitorDeArquivo);
+
+			while(this.bufferDoLeitorDeArquivo.ready()) {
 				contador++;
-				conteudoLidoDoArquivo = this.getBufferDoLeitorDeArquivo().readLine();
+				conteudoLidoDoArquivo = this.bufferDoLeitorDeArquivo.readLine();
 				if((contador >= primeiraLinhaASerLida) && (contador <= ultimaLinhaASerLida)) {
 					trechoDoArquivoDesejado = trechoDoArquivoDesejado + conteudoLidoDoArquivo + "\n";
 				}
 			}
-			this.getLeitorDeArquivo().close();
-			this.getBufferDoLeitorDeArquivo().close();
+
+			this.leitorDeArquivo.close();
+			this.bufferDoLeitorDeArquivo.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -320,22 +348,22 @@ public class ManipularArquivo {
 
 		try {
 			if(!this.arquivoExiste()) {
-				this.getArquivo().createNewFile();
+				this.arquivo.createNewFile();
 				if(this.arquivoExiste()) {
-					this.setArquivoCriado(true);
+					this.arquivoCriado = true;
 				}
 				else {
-					this.setArquivoCriado(false);
+					this.arquivoCriado = false;
 				}
 			}
 			else {
-				this.setArquivoCriado(false);
+				this.arquivoCriado = false;
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		return this.isArquivoCriado();
+		return this.arquivoCriado;
 	}
 
 	/**
@@ -351,19 +379,19 @@ public class ManipularArquivo {
 	public boolean deletarArquivo() {
 
 		if(this.arquivoExiste()) {
-			this.getArquivo().delete();
+			this.arquivo.delete();
 			if(!this.arquivoExiste()) {
-				this.setArquivoDeletado(true);
+				this.arquivoDeletado = true;
 			}
 			else {
-				this.setArquivoDeletado(false);
+				this.arquivoDeletado = false;
 			}
 		}
 		else {
-			this.setArquivoDeletado(false);
+			this.arquivoDeletado = false;
 		}
 
-		return this.isArquivoDeletado();
+		return this.arquivoDeletado;
 
 	}
 
@@ -374,8 +402,8 @@ public class ManipularArquivo {
 	 * @author Otavio Cruzatto
 	 */
 	public boolean arquivoExiste() {
-		this.setArquivoExiste(getArquivo().exists());
-		return this.isArquivoExiste();
+		this.arquivoExiste = arquivo.exists();
+		return this.arquivoExiste;
 	}
 
 	/**
@@ -383,105 +411,54 @@ public class ManipularArquivo {
 	 * @author Otavio Cruzatto
 	 */
 	public void exibirInformacoes() {
-		System.out.println("O arquivo existe: " + this.isArquivoExiste());
-		System.out.println("O arquivo foi criado: " + this.isArquivoCriado());
-		System.out.println("O arquivo foi deletado: " + this.isArquivoDeletado());
-		System.out.println("Endereço do arquivo: " + this.getEnderecoDoArquivo());
+		System.out.println("O arquivo existe: " + this.arquivoExiste);
+		System.out.println("O arquivo foi criado: " + this.arquivoCriado);
+		System.out.println("O arquivo foi deletado: " + this.arquivoDeletado);
+		System.out.println("Endereço do arquivo: " + this.enderecoDoArquivo);
+	}
+
+	/**
+	 * Método que retorna a quantidade de linhas do arquivo instanciado.
+	 * @return
+	 * Quantidade de linhas.
+	 * @author Otavio Cruzatto
+	 */
+	public int quantidadeDeLinhasNoArquivo() {
+		int quantidadeDeLinhas = 0;
+
+		try {
+			this.leitorDeArquivo = new FileReader(this.arquivo);
+			this.bufferDoLeitorDeArquivo = new BufferedReader(this.leitorDeArquivo);
+
+			while(this.bufferDoLeitorDeArquivo.ready()) {
+				this.bufferDoLeitorDeArquivo.readLine();
+				quantidadeDeLinhas++;
+			}
+			this.leitorDeArquivo.close();
+			this.bufferDoLeitorDeArquivo.close();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return quantidadeDeLinhas;
 	}
 
 	public File getArquivo() {
 		return arquivo;
 	}
 
-	public void setArquivo(File arquivo) {
-		this.arquivo = arquivo;
-	}
-
-	public String getEnderecoDoArquivo() {
-		return enderecoDoArquivo;
-	}
-
-	public void setEnderecoDoArquivo(String enderecoDoArquivo) {
-		this.enderecoDoArquivo = enderecoDoArquivo;
-	}
-
 	public boolean isArquivoExiste() {
 		return arquivoExiste;
-	}
-
-	public void setArquivoExiste(boolean arquivoExiste) {
-		this.arquivoExiste = arquivoExiste;
 	}
 
 	public boolean isArquivoCriado() {
 		return arquivoCriado;
 	}
 
-	public void setArquivoCriado(boolean arquivoCriado) {
-		this.arquivoCriado = arquivoCriado;
-	}
-
 	public boolean isArquivoDeletado() {
 		return arquivoDeletado;
 	}
 
-	public void setArquivoDeletado(boolean arquivoDeletado) {
-		this.arquivoDeletado = arquivoDeletado;
-	}
-
-	public FileWriter getEscritorDeArquivo() {
-		return escritorDeArquivo;
-	}
-
-	public void setEscritorDeArquivo(FileWriter escritorDeArquivo) {
-		this.escritorDeArquivo = escritorDeArquivo;
-	}
-
-	public BufferedWriter getBufferDoEscritorDeArquivo() {
-		return bufferDoEscritorDeArquivo;
-	}
-
-	public void setBufferDoEscritorDeArquivo(BufferedWriter bufferDoEscritorDeArquivo) {
-		this.bufferDoEscritorDeArquivo = bufferDoEscritorDeArquivo;
-	}
-
-	public FileReader getLeitorDeArquivo() {
-		return leitorDeArquivo;
-	}
-
-	public void setLeitorDeArquivo(FileReader leitorDeArquivo) {
-		this.leitorDeArquivo = leitorDeArquivo;
-	}
-
-	public BufferedReader getBufferDoLeitorDeArquivo() {
-		return bufferDoLeitorDeArquivo;
-	}
-
-	public void setBufferDoLeitorDeArquivo(BufferedReader bufferDoLeitorDeArquivo) {
-		this.bufferDoLeitorDeArquivo = bufferDoLeitorDeArquivo;
-	}
-
-	public int getQuantidadeDeLinhasNoArquivo() {
-		return quantidadeDeLinhasNoArquivo;
-	}
-
-	private void setQuantidadeDeLinhasNoArquivo() {
-		int quantidadeDeLinhas = 0;
-
-		try {
-			this.setLeitorDeArquivo(new FileReader(this.getEnderecoDoArquivo()));
-			this.setBufferDoLeitorDeArquivo(new BufferedReader(getLeitorDeArquivo()));
-			while(this.getBufferDoLeitorDeArquivo().ready()) {
-				this.getBufferDoLeitorDeArquivo().readLine();
-				quantidadeDeLinhas++;
-			}
-			this.getLeitorDeArquivo().close();
-			this.getBufferDoLeitorDeArquivo().close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		this.quantidadeDeLinhasNoArquivo = quantidadeDeLinhas;
-	}
-
 }
+
