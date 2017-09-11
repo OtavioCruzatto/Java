@@ -11,16 +11,16 @@ public class PortaSerial {
 	private SerialPort portaSerial;
 	private String[] listaDePortasComDisponiveis;
 	private String portaComSelecionada;
-	private int controleDeFluxo;
-	private int stopBits;
-	private int paridade;
-	private Baud baudrate;
-	private DataBits dataBits = DataBits.DataBits_8bits;
 	private String dadosRecebidos = "";
 	private String stringDeFinalDeLinha = "";
 	private StringDeFinalDeLinha finalDeLinha = StringDeFinalDeLinha.Desabilitar;
 	private StatusDaRecepcao statusDaRecepcao = StatusDaRecepcao.NaoFinalizada;
 	private Echo echo = Echo.Desabilitar;
+	private Baudrate baudrate = Baudrate.Baud_9600;
+	private DataBits dataBits = DataBits.DataBits_8_bits;
+	private Paridade paridade = Paridade.None;
+	private ControleDeFluxo controleDeFluxo = ControleDeFluxo.None;
+	private StopBits stopBits = StopBits.StopBit_1;
 
 	public PortaSerial() {
 		this.getListaDePortasComDisponiveis();
@@ -30,7 +30,7 @@ public class PortaSerial {
 		boolean portaComConectada = false;
 
 		this.portaSerial = SerialPort.getCommPort(this.getPortaComSelecionada());
-		this.configurarPorta();
+		this.configurarPortaSerial();
 		this.portaSerial.openPort();
 		if(this.portaSerial.isOpen()) {
 			portaComConectada = true;
@@ -120,12 +120,84 @@ public class PortaSerial {
 		return portaComConectada;
 	}
 
-	public void configurarPorta() {
-		this.portaSerial.setBaudRate(this.getBaudrate().getBaud());
-		this.portaSerial.setNumDataBits(this.getDataBits().getDataBits());
-		this.portaSerial.setFlowControl(this.getControleDeFluxo());
-		this.portaSerial.setNumStopBits(this.getStopBits());
-		this.portaSerial.setParity(this.getParidade());
+	public void configurarPortaSerial() {
+
+		this.portaSerial.setBaudRate(Integer.parseInt(baudrate.getBaudrate()));
+
+		switch (dataBits.getDataBits()) {
+			case "7 bits":
+				this.portaSerial.setNumDataBits(7);
+			break;
+
+			case "8 bits":
+				this.portaSerial.setNumDataBits(8);
+			break;
+
+			default:
+				System.out.println("Databits inválido!");
+				System.out.println("Obs: Para 7 bits: String = \"7 bits\"");
+				System.out.println("Obs: Para 8 bits: String = \"8 bits\"");
+			break;
+		}
+
+		switch (paridade.getParidade()) {
+			case "None":
+				this.portaSerial.setParity(SerialPort.NO_PARITY);
+			break;
+
+			case "Odd":
+				this.portaSerial.setNumDataBits(SerialPort.ODD_PARITY);
+			break;
+
+			case "Even":
+				this.portaSerial.setNumDataBits(SerialPort.EVEN_PARITY);
+			break;
+
+			default:
+				System.out.println("Paridade inválido!");
+				System.out.println("Obs: Para None: String = \"None\"");
+				System.out.println("Obs: Para Odd: String = \"Odd\"");
+				System.out.println("Obs: Para Even: String = \"Even\"");
+			break;
+		}
+
+		switch (stopBits.getStopBits()) {
+			case "1 bit":
+				this.portaSerial.setNumStopBits(SerialPort.ONE_STOP_BIT);
+			break;
+
+			case "1.5 bits":
+				this.portaSerial.setNumStopBits(SerialPort.ONE_POINT_FIVE_STOP_BITS);
+			break;
+
+			case "2 bits":
+				this.portaSerial.setNumStopBits(SerialPort.TWO_STOP_BITS);
+			break;
+
+			default:
+				System.out.println("StopBits inválido!");
+				System.out.println("Obs: Para 1 bit: String = \"1 bit\"");
+				System.out.println("Obs: Para 1.5 bits: String = \"1.5 bits\"");
+				System.out.println("Obs: Para 2 bits: String = \"1.5 bits\"");
+			break;
+		}
+
+		switch (controleDeFluxo.getControleDeFluxo()) {
+			case "None":
+				portaSerial.setFlowControl(SerialPort.FLOW_CONTROL_DISABLED);
+				break;
+			case "Xon / Xoff":
+				portaSerial.setFlowControl(SerialPort.FLOW_CONTROL_XONXOFF_IN_ENABLED);
+				portaSerial.setFlowControl(SerialPort.FLOW_CONTROL_XONXOFF_OUT_ENABLED);
+				break;
+			case "Hardware":
+				portaSerial.setFlowControl(SerialPort.FLOW_CONTROL_CTS_ENABLED);
+				portaSerial.setFlowControl(SerialPort.FLOW_CONTROL_RTS_ENABLED);
+				portaSerial.setFlowControl(SerialPort.FLOW_CONTROL_DTR_ENABLED);
+				portaSerial.setFlowControl(SerialPort.FLOW_CONTROL_DSR_ENABLED);
+				break;
+		}
+
 	}
 
 	public void enviarDados(String dadosParaSeremEnviados) {
@@ -182,46 +254,6 @@ public class PortaSerial {
 		this.portaComSelecionada = portaComSelecionada;
 	}
 
-	public DataBits getDataBits() {
-		return dataBits;
-	}
-
-	public void setDataBits(DataBits dataBits) {
-		this.dataBits = dataBits;
-	}
-
-	public Baud getBaudrate() {
-		return baudrate;
-	}
-
-	public void setBaudrate(Baud baudrate) {
-		this.baudrate = baudrate;
-	}
-
-	public int getControleDeFluxo() {
-		return controleDeFluxo;
-	}
-
-	public void setControleDeFluxo(int controleDeFluxo) {
-		this.controleDeFluxo = controleDeFluxo;
-	}
-
-	public int getStopBits() {
-		return stopBits;
-	}
-
-	public void setStopBits(int stopBits) {
-		this.stopBits = stopBits;
-	}
-
-	public int getParidade() {
-		return paridade;
-	}
-
-	public void setParidade(int paridade) {
-		this.paridade = paridade;
-	}
-
 	public String getDadosRecebidos() {
 		return dadosRecebidos;
 	}
@@ -261,6 +293,55 @@ public class PortaSerial {
 	public void setStringDeFinalDeLinha(String stringDeFinalDeLinha) {
 		this.stringDeFinalDeLinha = stringDeFinalDeLinha;
 	}
+
+	public SerialPort getPortaSerial() {
+		return portaSerial;
+	}
+
+	public void setPortaSerial(SerialPort portaSerial) {
+		this.portaSerial = portaSerial;
+	}
+
+	public Baudrate getBaudrate() {
+		return baudrate;
+	}
+
+	public void setBaudrate(Baudrate baudrate) {
+		this.baudrate = baudrate;
+	}
+
+	public DataBits getDataBits() {
+		return dataBits;
+	}
+
+	public void setDataBits(DataBits dataBits) {
+		this.dataBits = dataBits;
+	}
+
+	public Paridade getParidade() {
+		return paridade;
+	}
+
+	public void setParidade(Paridade paridade) {
+		this.paridade = paridade;
+	}
+
+	public StopBits getStopBits() {
+		return stopBits;
+	}
+
+	public void setStopBits(StopBits stopBits) {
+		this.stopBits = stopBits;
+	}
+
+	public ControleDeFluxo getControleDeFluxo() {
+		return controleDeFluxo;
+	}
+
+	public void setControleDeFluxo(ControleDeFluxo controleDeFluxo) {
+		this.controleDeFluxo = controleDeFluxo;
+	}
+
 
 
 }
