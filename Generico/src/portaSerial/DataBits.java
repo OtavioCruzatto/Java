@@ -1,15 +1,15 @@
 package portaSerial;
 
 public enum DataBits {
-	DataBits_8bits(8), DataBits_7bits(7);
+	DataBits_8_bits("8 bits"), DataBits_7_bits("7 bits");
 
-	private int dataBits;
+	private String dataBits;
 
-	private DataBits(int dataBits) {
+	private DataBits(String dataBits) {
 		this.dataBits = dataBits;
 	}
 
-	public int getDataBits() {
+	public String getDataBits() {
 		return dataBits;
 	}
 }
