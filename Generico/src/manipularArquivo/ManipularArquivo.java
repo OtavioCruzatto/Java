@@ -79,6 +79,7 @@ public class ManipularArquivo {
 			this.escritorDeArquivo = new FileWriter(this.arquivo, true);
 			this.bufferDoEscritorDeArquivo = new BufferedWriter(this.escritorDeArquivo);
 			this.bufferDoEscritorDeArquivo.write(informacaoParaSerEscrita);
+			this.bufferDoEscritorDeArquivo.flush();
 			this.bufferDoEscritorDeArquivo.close();
 			this.escritorDeArquivo.close();
 			this.quantidadeDeLinhasNoArquivo = this.quantidadeDeLinhasNoArquivo();
@@ -135,6 +136,7 @@ public class ManipularArquivo {
 			this.escritorDeArquivo = new FileWriter(this.arquivo);
 			this.bufferDoEscritorDeArquivo = new BufferedWriter(this.escritorDeArquivo);
 			this.escritorDeArquivo.write("");
+			this.escritorDeArquivo.flush();
 			this.bufferDoEscritorDeArquivo.close();
 			this.escritorDeArquivo.close();
 			this.quantidadeDeLinhasNoArquivo = this.quantidadeDeLinhasNoArquivo();
