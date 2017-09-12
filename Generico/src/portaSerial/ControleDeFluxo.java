@@ -1,7 +1,7 @@
 package portaSerial;
 
 public enum ControleDeFluxo {
-	None("None");
+	None("None"), Xon_Xoff("Xon / Xoff"), Hardware("Hardware");
 
 	private String controleDeFluxo;
 
