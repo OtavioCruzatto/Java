@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
+import graphicalUserInterface.ConfiguracaoPortaSerialController;
 
 public class PortaSerial {
 	private SerialPort portaSerial;
@@ -16,18 +17,21 @@ public class PortaSerial {
 	private StringDeFinalDeLinha finalDeLinha = StringDeFinalDeLinha.Desabilitar;
 	private StatusDaRecepcao statusDaRecepcao = StatusDaRecepcao.NaoFinalizada;
 	private Echo echo = Echo.Desabilitar;
-	private Baudrate baudrate = Baudrate.Baud_9600;
-	private DataBits dataBits = DataBits.DataBits_8_bits;
-	private Paridade paridade = Paridade.None;
-	private ControleDeFluxo controleDeFluxo = ControleDeFluxo.None;
-	private StopBits stopBits = StopBits.StopBit_1;
+	private String baudrate = Baudrate.Baud_9600.getBaudrate();
+	private String dataBits = DataBits.DataBits_8_bits.getDataBits();
+	private String paridade = Paridade.None.getParidade();
+	private String controleDeFluxo = ControleDeFluxo.None.getControleDeFluxo();
+	private String stopBits = StopBits.StopBit_1.getStopBits();
+	private ConfiguracaoPortaSerialController configuracaoPortaSerialController;
+	private boolean portaComConectada = false;
 
 	public PortaSerial() {
 		this.getListaDePortasComDisponiveis();
+		
 	}
 
 	public boolean conectarNaPorta() {
-		boolean portaComConectada = false;
+		portaComConectada = false;
 
 		this.portaSerial = SerialPort.getCommPort(this.getPortaComSelecionada());
 		this.configurarPortaSerial();
@@ -88,13 +92,13 @@ public class PortaSerial {
 						InputStream entradaDeDados = portaSerial.getInputStream();
 						byte[] novosBytes = new byte[portaSerial.bytesAvailable()];
 						entradaDeDados.read(novosBytes);
+
 						for(int i = 0; i < novosBytes.length; i++) {
 							setDadosRecebidos(getDadosRecebidos() + (char) novosBytes[i]);
 
 							if(echo == Echo.Habilitar) {
 								enviarDados(String.valueOf((char) novosBytes[i]));
 							}
-
 						}
 
 						if(finalDeLinha == StringDeFinalDeLinha.Habilitar) {
@@ -107,7 +111,10 @@ public class PortaSerial {
 							}
 						}
 
+						configuracaoPortaSerialController.interpretarDadosRecebidos(getDadosRecebidos());
+
 						entradaDeDados.close();
+
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -122,9 +129,9 @@ public class PortaSerial {
 
 	public void configurarPortaSerial() {
 
-		this.portaSerial.setBaudRate(Integer.parseInt(baudrate.getBaudrate()));
+		this.portaSerial.setBaudRate(Integer.parseInt(baudrate));
 
-		switch (dataBits.getDataBits()) {
+		switch (dataBits) {
 			case "7 bits":
 				this.portaSerial.setNumDataBits(7);
 			break;
@@ -140,7 +147,7 @@ public class PortaSerial {
 			break;
 		}
 
-		switch (paridade.getParidade()) {
+		switch (paridade) {
 			case "None":
 				this.portaSerial.setParity(SerialPort.NO_PARITY);
 			break;
@@ -161,7 +168,7 @@ public class PortaSerial {
 			break;
 		}
 
-		switch (stopBits.getStopBits()) {
+		switch (stopBits) {
 			case "1 bit":
 				this.portaSerial.setNumStopBits(SerialPort.ONE_STOP_BIT);
 			break;
@@ -182,7 +189,7 @@ public class PortaSerial {
 			break;
 		}
 
-		switch (controleDeFluxo.getControleDeFluxo()) {
+		switch (controleDeFluxo) {
 			case "None":
 				portaSerial.setFlowControl(SerialPort.FLOW_CONTROL_DISABLED);
 				break;
@@ -211,8 +218,10 @@ public class PortaSerial {
 		}
 	}
 
-	public void fecharPortaCom() {
-		this.portaSerial.closePort();
+	public void fecharPortaSerial() {
+		if(portaComConectada == true) {
+			this.portaSerial.closePort();
+		}
 	}
 
 	public String[] getListaDePortasComDisponiveis() {
@@ -239,9 +248,9 @@ public class PortaSerial {
 			listaDePortasComDisponiveis[contador] = listaDePortasComDisponiveisAux[contador];
 		}
 
-//		for(int contador = 0; contador < quantidadeDePortasComDisponiveis; contador++) {
-//			System.out.println(listaDePortasComDisponiveis[contador]);
-//		}
+		for(int contador = 0; contador < quantidadeDePortasComDisponiveis; contador++) {
+			System.out.println(listaDePortasComDisponiveis[contador]);
+		}
 
 		return listaDePortasComDisponiveis;
 	}
@@ -302,46 +311,52 @@ public class PortaSerial {
 		this.portaSerial = portaSerial;
 	}
 
-	public Baudrate getBaudrate() {
+	public String getBaudrate() {
 		return baudrate;
 	}
 
-	public void setBaudrate(Baudrate baudrate) {
+	public void setBaudrate(String baudrate) {
 		this.baudrate = baudrate;
 	}
 
-	public DataBits getDataBits() {
+	public String getDataBits() {
 		return dataBits;
 	}
 
-	public void setDataBits(DataBits dataBits) {
+	public void setDataBits(String dataBits) {
 		this.dataBits = dataBits;
 	}
 
-	public Paridade getParidade() {
+	public String getParidade() {
 		return paridade;
 	}
 
-	public void setParidade(Paridade paridade) {
+	public void setParidade(String paridade) {
 		this.paridade = paridade;
 	}
 
-	public StopBits getStopBits() {
-		return stopBits;
-	}
-
-	public void setStopBits(StopBits stopBits) {
-		this.stopBits = stopBits;
-	}
-
-	public ControleDeFluxo getControleDeFluxo() {
+	public String getControleDeFluxo() {
 		return controleDeFluxo;
 	}
 
-	public void setControleDeFluxo(ControleDeFluxo controleDeFluxo) {
+	public void setControleDeFluxo(String controleDeFluxo) {
 		this.controleDeFluxo = controleDeFluxo;
 	}
 
+	public String getStopBits() {
+		return stopBits;
+	}
 
+	public void setStopBits(String stopBits) {
+		this.stopBits = stopBits;
+	}
+
+	public ConfiguracaoPortaSerialController getConfiguracaoPortaSerialController() {
+		return configuracaoPortaSerialController;
+	}
+
+	public void setConfiguracaoPortaSerialController(ConfiguracaoPortaSerialController configuracaoPortaSerialController) {
+		this.configuracaoPortaSerialController = configuracaoPortaSerialController;
+	}
 
 }
