@@ -44,7 +44,7 @@ public class HandleFile {
 	 * @return
 	 * @author Otavio
 	 */
-	public static String read(String path) {
+	public static String read(String path, int quantidadeDeLinhas) {
 		String line = "";									// Declara uma String para receber a leitura do arquivo
 
 		try {												// Utiliza um try/catch, por causa das possíveis excessões gerada pelos objetos instanciados
@@ -52,7 +52,10 @@ public class HandleFile {
 			FileReader fr = new FileReader(path);			// Cria um objeto do tipo FileReader e passa para ele o endereço do arquivo
 			BufferedReader br = new BufferedReader(fr);		// Cria um objeto do tipo BufferedReader e passa para ele o objeto do tipo FileReader
 
-			line = br.readLine();							// Lê a primeira linha do arquivo e à atribui a variável line
+			while(quantidadeDeLinhas > 0) {
+				line = line + br.readLine() + '\n';				// Lê a primeira linha do arquivo e à atribui a variável line
+				quantidadeDeLinhas--;
+			}
 
 			br.close();										// Fecha o objeto br
 			fr.close();										// Fecha o objeto fr

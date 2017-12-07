@@ -185,6 +185,7 @@ public class ManipularArquivo {
 			this.bufferDoLeitorDeArquivo = new BufferedReader(this.leitorDeArquivo);
 			while(this.bufferDoLeitorDeArquivo.ready()) {
 				conteudoLidoDoArquivo = conteudoLidoDoArquivo + this.bufferDoLeitorDeArquivo.readLine() + "\n";
+				System.out.println(this.bufferDoLeitorDeArquivo.readLine());
 			}
 			this.leitorDeArquivo.close();
 			this.bufferDoLeitorDeArquivo.close();
