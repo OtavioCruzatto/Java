@@ -1,61 +1,42 @@
 package starter;
 
-import beagleBone.USERLED_STATE;
-import beagleBone.USERLED_USR;
-import beagleBone.UserLeds;
+import portaSerial.Baudrate;
+import portaSerial.ControleDeFluxo;
+import portaSerial.DataBits;
+import portaSerial.Paridade;
+import portaSerial.PortaSerial;
+import portaSerial.StopBits;
 
 public class Starter {
 
 	public static void main(String[] args) {
 
-		UserLeds led_0 = new UserLeds(USERLED_USR.USR_0);
-		UserLeds led_1 = new UserLeds(USERLED_USR.USR_1);
-		UserLeds led_2 = new UserLeds(USERLED_USR.USR_2);
-		UserLeds led_3 = new UserLeds(USERLED_USR.USR_3);
-
-		led_0.init();
-		led_1.init();
-		led_2.init();
-		led_3.init();
-
+		PortaSerial com = new PortaSerial();
+		com.setPortaComSelecionada(com.getListaDePortasComDisponiveis()[0]);
+		com.setBaudrate(Baudrate.Baud_115200.getBaudrate());
+		com.setParidade(Paridade.None.getParidade());
+		com.setDataBits(DataBits.DataBits_8_bits.getDataBits());
+		com.setControleDeFluxo(ControleDeFluxo.None.getControleDeFluxo());
+		com.setStopBits(StopBits.StopBit_1.getStopBits());
+		com.conectarNaPorta();	
+		com.configurarPortaSerial();
+			
+		
 		while(true) {
-
+			
 			try {
-
-				led_0.setState(USERLED_STATE.ON);
-				led_1.setState(USERLED_STATE.OFF);
-				led_2.setState(USERLED_STATE.OFF);
-				led_3.setState(USERLED_STATE.OFF);
-				Thread.sleep(100);
-
-				led_0.setState(USERLED_STATE.OFF);
-				led_1.setState(USERLED_STATE.ON);
-				led_2.setState(USERLED_STATE.OFF);
-				led_3.setState(USERLED_STATE.OFF);
-				Thread.sleep(100);
-
-				led_0.setState(USERLED_STATE.OFF);
-				led_1.setState(USERLED_STATE.OFF);
-				led_2.setState(USERLED_STATE.ON);
-				led_3.setState(USERLED_STATE.OFF);
-				Thread.sleep(100);
-
-				led_0.setState(USERLED_STATE.OFF);
-				led_1.setState(USERLED_STATE.OFF);
-				led_2.setState(USERLED_STATE.OFF);
-				led_3.setState(USERLED_STATE.ON);
-				Thread.sleep(100);
-
-				led_0.setState(USERLED_STATE.OFF);
-				led_1.setState(USERLED_STATE.OFF);
-				led_2.setState(USERLED_STATE.OFF);
-				led_3.setState(USERLED_STATE.OFF);
-				Thread.sleep(100);
-
+				Thread.sleep(750);
+				for(int aux = 0; aux < com.getDadosRecebidosByte().size(); aux++) {
+					System.out.print(Integer.toHexString(com.getDadosRecebidosByte().get(aux)) + " ");
+				}
+				System.out.println();
+				
 			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
+			
+			
 		}
 
 	}

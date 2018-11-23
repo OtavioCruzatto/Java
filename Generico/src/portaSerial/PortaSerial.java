@@ -3,6 +3,8 @@ package portaSerial;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
@@ -12,7 +14,8 @@ public class PortaSerial {
 	private SerialPort portaSerial;
 	private String[] listaDePortasComDisponiveis;
 	private String portaComSelecionada;
-	private String dadosRecebidos = "";
+	private String dadosRecebidosChar = "";
+	private ArrayList<Integer> dadosRecebidosByte = new ArrayList<Integer>();
 	private String stringDeFinalDeLinha = "";
 	private StringDeFinalDeLinha finalDeLinha = StringDeFinalDeLinha.Desabilitar;
 	private StatusDaRecepcao statusDaRecepcao = StatusDaRecepcao.NaoFinalizada;
@@ -54,56 +57,25 @@ public class PortaSerial {
 				}
 				else {
 
-					/*
-					 * Uma forma de receber os dados:
-					 */
-//					try {
-//						InputStream entradaDeDados = portaSerial.getInputStream();
-//						while(portaSerial.bytesAvailable() != 0) {
-//							char dadoRecebido = (char) entradaDeDados.read();
-//							setDadosRecebidos(getDadosRecebidos() + dadoRecebido);
-//
-//							if(echo == Echo.Habilitar) {
-//								enviarDados(String.valueOf(dadoRecebido));
-//							}
-//
-//						}
-//
-//						if(finalDeLinha == CaracterDeFinalDeLinha.Habilitar) {
-//							if(getDadosRecebidos().endsWith(stringDeFinalDeLinha)) {
-//								setDadosRecebidos(getDadosRecebidos().substring(0, getDadosRecebidos().lastIndexOf(stringDeFinalDeLinha)));
-//								statusDaRecepcao = StatusDaRecepcao.Finalizada;
-//							}
-//							else {
-//							statusDaRecepcao = StatusDaRecepcao.NaoFinalizada;
-//							}
-//						}
-//
-//						entradaDeDados.close();
-//					} catch (IOException e) {
-//						e.printStackTrace();
-//					}
-
-
-					/*
-					 * Outra forma de receber os dados:
-					 */
 					try {
 						InputStream entradaDeDados = portaSerial.getInputStream();
-						byte[] novosBytes = new byte[portaSerial.bytesAvailable()];
-						entradaDeDados.read(novosBytes);
-
-						for(int i = 0; i < novosBytes.length; i++) {
-							setDadosRecebidos(getDadosRecebidos() + (char) novosBytes[i]);
-
+						
+						while(portaSerial.bytesAvailable() != 0) {
+							int dadoRecebidoByte = (char) entradaDeDados.read();
+							char dadoRecebidoChar = (char) dadoRecebidoByte;
+							
+							getDadosRecebidosByte().add(dadoRecebidoByte);
+							setDadosRecebidosChar(getDadosRecebidosChar() + dadoRecebidoChar);
+							
 							if(echo == Echo.Habilitar) {
-								enviarDados(String.valueOf((char) novosBytes[i]));
+								enviarDados(String.valueOf(dadoRecebidoChar));
 							}
+
 						}
 
 						if(finalDeLinha == StringDeFinalDeLinha.Habilitar) {
-							if(getDadosRecebidos().endsWith(String.valueOf(stringDeFinalDeLinha))) {
-								setDadosRecebidos(getDadosRecebidos().substring(0, getDadosRecebidos().lastIndexOf(stringDeFinalDeLinha)));
+							if(getDadosRecebidosChar().endsWith(String.valueOf(stringDeFinalDeLinha))) {
+								setDadosRecebidosChar(getDadosRecebidosChar().substring(0, getDadosRecebidosChar().lastIndexOf(stringDeFinalDeLinha)));
 								statusDaRecepcao = StatusDaRecepcao.Finalizada;
 							}
 							else {
@@ -111,10 +83,7 @@ public class PortaSerial {
 							}
 						}
 
-						configuracaoPortaSerialController.interpretarDadosRecebidos(getDadosRecebidos());
-
 						entradaDeDados.close();
-
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -263,12 +232,12 @@ public class PortaSerial {
 		this.portaComSelecionada = portaComSelecionada;
 	}
 
-	public String getDadosRecebidos() {
-		return dadosRecebidos;
+	public String getDadosRecebidosChar() {
+		return dadosRecebidosChar;
 	}
 
-	public void setDadosRecebidos(String dadosRecebidos) {
-		this.dadosRecebidos = dadosRecebidos;
+	public void setDadosRecebidosChar(String dadosRecebidosChar) {
+		this.dadosRecebidosChar = dadosRecebidosChar;
 	}
 
 	public StringDeFinalDeLinha getFinalDeLinha() {
@@ -357,6 +326,14 @@ public class PortaSerial {
 
 	public void setConfiguracaoPortaSerialController(ConfiguracaoPortaSerialController configuracaoPortaSerialController) {
 		this.configuracaoPortaSerialController = configuracaoPortaSerialController;
+	}
+	
+	public ArrayList<Integer> getDadosRecebidosByte() {
+		return dadosRecebidosByte;
+	}
+
+	public void setDadosRecebidosByte(ArrayList<Integer> dadosRecebidosByte) {
+		this.dadosRecebidosByte = dadosRecebidosByte;
 	}
 
 }
