@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXCheckBox?>
+<?import com.jfoenix.controls.JFXPasswordField?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Polyline?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.181" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pacote.Controladora">
+   <children>
+      <AnchorPane prefHeight="600.0" prefWidth="470.0" style="-fx-background-color: lightgray;">
+         <children>
+            <Label layoutX="194.0" layoutY="199.0" text="Sign up" textFill="#1800ff">
+               <font>
+                  <Font name="Tahoma" size="25.0" />
+               </font>
+            </Label>
+            <Polyline fill="#132a4f" layoutX="185.0" layoutY="130.0" points="-185.0, -61.0, -185.0, -61.0, 285.0, -130.0, -185.0, -130.0" strokeType="INSIDE" />
+            <JFXTextField focusColor="BLACK" labelFloat="true" layoutX="100.0" layoutY="271.0" prefHeight="25.0" prefWidth="270.0" promptText="Email address" style="-fx-text-fill: black; -fx-prompt-text-fill: darkslategray;" unFocusColor="DARKSLATEGRAY">
+               <font>
+                  <Font name="Tahoma" size="15.0" />
+               </font>
+            </JFXTextField>
+            <JFXButton buttonType="RAISED" layoutX="100.0" layoutY="358.0" prefHeight="32.0" prefWidth="270.0" style="-fx-background-color: #2f4f4f; -fx-text-fill: lightgray; -fx-background-radius: 50;" text="Register">
+               <font>
+                  <Font name="Tahoma" size="15.0" />
+               </font>
+            </JFXButton>
+            <Polyline fill="#132a4f" layoutX="210.0" layoutY="513.0" points="260.0, 16.0, 260.0, 87.0, 0.0, 87.0, -210.0, 87.0" stroke="#132a4f" strokeType="INSIDE" />
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutX="470.0" prefHeight="600.0" prefWidth="330.0" style="-fx-background-color: #132a4f;">
+         <children>
+            <JFXTextField focusColor="WHITE" labelFloat="true" layoutX="37.0" layoutY="244.0" prefHeight="25.0" prefWidth="270.0" promptText="Username or email address" style="-fx-text-fill: white; -fx-prompt-text-fill: deepskyblue;" unFocusColor="#4857ff">
+               <font>
+                  <Font name="Tahoma" size="15.0" />
+               </font>
+            </JFXTextField>
+            <JFXPasswordField focusColor="WHITE" labelFloat="true" layoutX="37.0" layoutY="307.0" prefHeight="25.0" prefWidth="270.0" promptText="Password" style="-fx-text-fill: white; -fx-prompt-text-fill: deepskyblue;" unFocusColor="#4857ff">
+               <font>
+                  <Font name="Tahoma" size="15.0" />
+               </font>
+            </JFXPasswordField>
+            <Label layoutX="135.0" layoutY="163.0" text="Sign in" textFill="LIGHTGRAY">
+               <font>
+                  <Font name="Tahoma" size="25.0" />
+               </font>
+            </Label>
+            <JFXButton buttonType="RAISED" layoutX="37.0" layoutY="374.0" prefHeight="32.0" prefWidth="270.0" style="-fx-background-color: #4857ff; -fx-text-fill: lightgray; -fx-background-radius: 50;" text="Login">
+               <font>
+                  <Font name="Tahoma" size="15.0" />
+               </font>
+            </JFXButton>
+            <Label fx:id="forgotLbl" layoutX="212.0" layoutY="420.0" onMouseEntered="#passarPorForgotPassword" onMouseExited="#sairDeForgotPassword" text="Forgot password?" textFill="DEEPSKYBLUE" />
+            <Polyline fill="LIGHTGRAY" layoutX="116.0" layoutY="534.0" points="219.0, -50.0, 219.0, 67.0, -116.0, 67.0, -116.0, -5.0" stroke="LIGHTGRAY" strokeType="INSIDE" />
+            <JFXCheckBox layoutX="37.0" layoutY="420.0" text="Remember-me" textFill="DEEPSKYBLUE" unCheckedColor="LIGHTGRAY" />
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>
